@@ -19,21 +19,6 @@ parser.add_argument("-r", "--recursive", default=False, help="Read all files und
 parser.add_argument("-R", "--dereference-recursive", default=False, help="Read all files under each directory, recursively. Follow all symbolic links, unlike -r.")
 args = parser.parse_args()
 
-#DEBUG:
-print("Options:",
-	"pattern: {}".format(args.pattern),
-	"file: {}".format(args.file),
-	"checkpath: {}".format(args.checkpath),
-	"invert-match: {}".format(args.invert_match),
-	"files-without-match: {}".format(args.files_without_match),
-	"files-with-matches: {}".format(args.files_with_matches),
-	"only-matching: {}".format(args.only_matching),
-	"recursive: {}".format(args.recursive),
-	"dereference-recursive: {}".format(args.dereference_recursive),
-	sep="\n"
-)
-#time.sleep(10)
-
 path_to_check = os.path.expanduser(args.checkpath)
 
 if os.path.isfile(path_to_check):
