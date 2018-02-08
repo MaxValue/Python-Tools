@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+# coding: utf-8
+#
+
+import re, os, argparse, time
+from lxml import html
+
+parser = argparse.ArgumentParser(description="XPath tester. Searches for PATTERN in each FILE. A FILE of “-” stands for standard input. If no FILE is given, recursive searches examine the working directory, and nonrecursive searches read standard input. By default, XPath tester prints the matching lines.")
+group = parser.add_mutually_exclusive_group(required=True)
+group.add_argument("pattern", nargs='?', default=False, help="Obtain patterns from FILE, one per line. If this option is used multiple times, search for all patterns given. The empty file contains zero patterns, and therefore matches nothing.")
+group.add_argument("-f", "--file", default=False, help="Obtain patterns from FILE, one per line. If this option is used multiple times, search for all patterns given. The empty file contains zero patterns, and therefore matches nothing.")
+parser.add_argument("checkpath", nargs='?', default=os.getcwd(), help="The file or files to check against the given XPaths. Expects directory by default.")
+parser.add_argument("-v", "--invert-match", action="store_true", help="Invert the sense of matching, to select non-matching lines.")
+parser.add_argument("-L", "--files-without-match", action="store_true", help="Suppress normal output; instead print the name of each input file from which no output would normally have been printed. The scanning will stop on the first match.")
+parser.add_argument("-l", "--files-with-matches", action="store_true", help="Suppress normal output; instead print the name of each input file from which output would normally have been printed. The scanning will stop on the first match.")
+parser.add_argument("-o", "--only-matching", action="store_true", help="Print only the matched (non-empty) parts of a matching line, with each such part on a separate output line.")
+# TODO:
+parser.add_argument("-r", "--recursive", default=False, help="Read all files under each directory, recursively, following symbolic links only if they are on the command line. Note that if no file operand is given, XPath Tester searches the working directory.")
+parser.add_argument("-R", "--dereference-recursive", default=False, help="Read all files under each directory, recursively. Follow all symbolic links, unlike -r.")
+args = parser.parse_args()
+
+#DEBUG:
+print("Options:",
+	"pattern: {}".format(args.pattern),
+	"file: {}".format(args.file),
+	"checkpath: {}".format(args.checkpath),
+	"invert-match: {}".format(args.invert_match),
+	"files-without-match: {}".format(args.files_without_match),
+	"files-with-matches: {}".format(args.files_with_matches),
+	"only-matching: {}".format(args.only_matching),
+	"recursive: {}".format(args.recursive),
+	"dereference-recursive: {}".format(args.dereference_recursive),
+	sep="\n"
+)
+#time.sleep(10)
+
+path_to_check = os.path.expanduser(args.checkpath)
+
+if os.path.isfile(path_to_check):
+	file_list = [path_to_check]
+elif os.path.isdir(path_to_check):
+	file_list = [os.path.join(path_to_check, x) for x in os.walk(path_to_check).__next__()[2]]
+else:
+	exit("Given path is neither file nor dir.")
+
+try:
+	for this_file_name in file_list:
+		with open(this_file_name, encoding="utf-8") as this_file:
+			tree = html.fromstring(this_file.read())
+			xpath_match = tree.xpath(args.pattern)
+			if len(xpath_match) == 0 and (args.invert_match or args.files_without_match):
+				print(this_file_name)
+			elif len(xpath_match) != 0 and not (args.invert_match or args.files_without_match):
+				if args.files_with_matches:
+					print(this_file_name)
+				else:
+					for result in xpath_match:
+						print("{filename}:{match}".format(filename=this_file_name, match=result))
+except KeyboardInterrupt as e:
+	exit("")
