@@ -12,7 +12,6 @@ group.add_argument("-f", "--file", default=False, help="Obtain patterns from FIL
 parser.add_argument("checkpath", nargs='?', default=os.getcwd(), help="The file or files to check against the given XPaths. Expects directory by default.")
 parser.add_argument("-L", "--files-without-match", action="store_true", help="Suppress normal output; instead print the name of each input file from which no output would normally have been printed. The scanning will stop on the first match.")
 parser.add_argument("-l", "--files-with-matches", action="store_true", help="Suppress normal output; instead print the name of each input file from which output would normally have been printed. The scanning will stop on the first match.")
-parser.add_argument("-o", "--only-matching", action="store_true", help="Print only the matched (non-empty) parts of a matching line, with each such part on a separate output line.")
 # TODO:
 parser.add_argument("-r", "--recursive", default=False, help="Read all files under each directory, recursively, following symbolic links only if they are on the command line. Note that if no file operand is given, XPath Tester searches the working directory.")
 parser.add_argument("-R", "--dereference-recursive", default=False, help="Read all files under each directory, recursively. Follow all symbolic links, unlike -r.")
