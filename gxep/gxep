@@ -10,7 +10,6 @@ group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument("pattern", nargs='?', default=False, help="Obtain patterns from FILE, one per line. If this option is used multiple times, search for all patterns given. The empty file contains zero patterns, and therefore matches nothing.")
 group.add_argument("-f", "--file", default=False, help="Obtain patterns from FILE, one per line. If this option is used multiple times, search for all patterns given. The empty file contains zero patterns, and therefore matches nothing.")
 parser.add_argument("checkpath", nargs='?', default=os.getcwd(), help="The file or files to check against the given XPaths. Expects directory by default.")
-parser.add_argument("-v", "--invert-match", action="store_true", help="Invert the sense of matching, to select non-matching lines.")
 parser.add_argument("-L", "--files-without-match", action="store_true", help="Suppress normal output; instead print the name of each input file from which no output would normally have been printed. The scanning will stop on the first match.")
 parser.add_argument("-l", "--files-with-matches", action="store_true", help="Suppress normal output; instead print the name of each input file from which output would normally have been printed. The scanning will stop on the first match.")
 parser.add_argument("-o", "--only-matching", action="store_true", help="Print only the matched (non-empty) parts of a matching line, with each such part on a separate output line.")
@@ -33,9 +32,9 @@ try:
 		with open(this_file_name, encoding="utf-8") as this_file:
 			tree = html.fromstring(this_file.read())
 			xpath_match = tree.xpath(args.pattern)
-			if len(xpath_match) == 0 and (args.invert_match or args.files_without_match):
+			if len(xpath_match) == 0 and args.files_without_match:
 				print(this_file_name)
-			elif len(xpath_match) != 0 and not (args.invert_match or args.files_without_match):
+			elif len(xpath_match) != 0 and args.files_without_match:
 				if args.files_with_matches:
 					print(this_file_name)
 				else:
