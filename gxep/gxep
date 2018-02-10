@@ -33,7 +33,7 @@ try:
 			xpath_match = tree.xpath(args.pattern)
 			if len(xpath_match) == 0 and args.files_without_match:
 				print(this_file_name)
-			elif len(xpath_match) != 0 and args.files_without_match:
+			elif len(xpath_match) != 0 and not args.files_without_match:
 				if args.files_with_matches:
 					print(this_file_name)
 				else:
