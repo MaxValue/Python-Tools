@@ -14,8 +14,7 @@ It can only parse HTML files for now.
 ## Roadmap
 1. Read XPath Queries from file
 2. Read from STDIN
-3 Support XML and provide a switch to handle XML/HTML respectively
-4. Find out if the line number can be displayed, or at least a direct XPath to address the location of the match
-5 Implement Python interface so this can be used as a module
-6. Deploy to Pypi?
-7. A GUI?
+3. Find out if the line number can be displayed, or at least a direct XPath to address the location of the match
+4 Implement Python interface so this can be used as a module
+5. Deploy to Pypi?
+6. A GUI?
