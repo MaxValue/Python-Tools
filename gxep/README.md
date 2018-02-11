@@ -6,9 +6,20 @@ Currently work in progress, the goal is to mimic grep as close as possible.
 
 It can only parse HTML files for now.
 
+## Small To-Do's:
+* use `%(prog)s` for the programname
+* define global default for arguments
+* change usage message
+* change epilog message
+* argparse.FileType('w') for the XPath input file
+* use choices for query type (HTML or XML) flag
+* check which arguments are always required
+
 ## Roadmap
-1. Find out if the line number can be displayed, or at least a direct XPath to address the location of the match
-2. Implement Python interface so this can be used as a module
-3. Support XML and provide a switch to handle XML/HTML respectively
-4. Deploy to Pypi?
-5. A GUI?
+1. Read XPath Queries from file
+2. Read from STDIN
+3 Support XML and provide a switch to handle XML/HTML respectively
+4. Find out if the line number can be displayed, or at least a direct XPath to address the location of the match
+5 Implement Python interface so this can be used as a module
+6. Deploy to Pypi?
+7. A GUI?
