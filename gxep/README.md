@@ -9,7 +9,6 @@ It can only parse HTML files for now.
 ## Small To-Do's:
 * change usage message
 * change epilog message
-* use choices for query type (HTML or XML) flag
 
 ## Roadmap
 1. Read XPath Queries from file

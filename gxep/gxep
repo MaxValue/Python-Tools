@@ -45,7 +45,7 @@ try:
 					tree = html.fromstring(this_file.read())
 				else:
 					tree = etree.fromstring(this_file.read())
-				xpath_match = tree.xpath(args.pattern)
+				xpath_match = tree.xpath(args.PATTERN)
 				if len(xpath_match) == 0 and args.files_without_match:
 					print(this_filename)
 				elif len(xpath_match) != 0 and not args.files_without_match:
