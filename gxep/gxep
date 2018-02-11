@@ -9,35 +9,42 @@ parser = argparse.ArgumentParser(description="XPath tester. Searches for PATTERN
 group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument("pattern", nargs='?', default=False, help="Obtain patterns from FILE, one per line. If this option is used multiple times, search for all patterns given. The empty file contains zero patterns, and therefore matches nothing.")
 group.add_argument("-f", "--file", default=False, help="Obtain patterns from FILE, one per line. If this option is used multiple times, search for all patterns given. The empty file contains zero patterns, and therefore matches nothing.")
-parser.add_argument("checkpath", nargs='?', default=os.getcwd(), help="The file or files to check against the given XPaths. Expects directory by default.")
+parser.add_argument("checkpath", nargs='?', default=False, help="The file or files to check against the given XPaths. Expects directory by default.")
 parser.add_argument("-L", "--files-without-match", action="store_true", help="Suppress normal output; instead print the name of each input file from which no output would normally have been printed. The scanning will stop on the first match.")
 parser.add_argument("-l", "--files-with-matches", action="store_true", help="Suppress normal output; instead print the name of each input file from which output would normally have been printed. The scanning will stop on the first match.")
-# TODO:
 parser.add_argument("-r", "--recursive", action="store_true", help="Read all files under each directory, recursively, following symbolic links only if they are on the command line. Note that if no file operand is given, XPath Tester searches the working directory.")
 parser.add_argument("-R", "--dereference-recursive", action="store_true", help="Read all files under each directory, recursively. Follow all symbolic links, unlike -r.")
 args = parser.parse_args()
 
-path_to_check = os.path.expanduser(args.checkpath)
+root_path = os.path.expanduser(args.checkpath)
 
-if os.path.isfile(path_to_check):
-	file_list = [path_to_check]
-elif os.path.isdir(path_to_check):
-	file_list = [os.path.join(path_to_check, x) for x in os.walk(path_to_check).__next__()[2]]
+if not os.path.exists(root_path):
+	parser.error("{}: No such file or directory".format(args.checkpath))
+
+if os.path.isfile(root_path):
+	directory_walker = [("", [], [root_path])]
+elif os.path.isdir(root_path):
+	if args.recursive or args.dereference_recursive:
+		directory_walker = os.walk(top=root_path, followlinks=args.dereference_recursive)
+	else:
+		parser.error("{}: Is a directory".format(root_path))
 else:
-	exit("Given path is neither file nor dir.")
+	parser.exit("TODO: Read from STDIN")
 
 try:
-	for this_file_name in file_list:
-		with open(this_file_name, encoding="utf-8") as this_file:
-			tree = html.fromstring(this_file.read())
-			xpath_match = tree.xpath(args.pattern)
-			if len(xpath_match) == 0 and args.files_without_match:
-				print(this_file_name)
-			elif len(xpath_match) != 0 and not args.files_without_match:
-				if args.files_with_matches:
-					print(this_file_name)
-				else:
-					for result in xpath_match:
-						print("{filename}:{match}".format(filename=this_file_name, match=result))
+	for walk_tuple in directory_walker:
+		for raw_filename in walk_tuple[2]:
+			this_filename = os.path.join(walk_tuple[0], raw_filename)
+			with open(this_filename, encoding="utf-8") as this_file:
+				tree = html.fromstring(this_file.read())
+				xpath_match = tree.xpath(args.pattern)
+				if len(xpath_match) == 0 and args.files_without_match:
+					print(this_filename)
+				elif len(xpath_match) != 0 and not args.files_without_match:
+					if args.files_with_matches:
+						print(this_filename)
+					else:
+						for result in xpath_match:
+							print("{filename}:{match}".format(filename=this_filename, match=result))
 except KeyboardInterrupt as e:
 	exit("")
