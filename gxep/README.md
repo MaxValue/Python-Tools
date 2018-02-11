@@ -7,7 +7,6 @@ Currently work in progress, the goal is to mimic grep as close as possible.
 It can only parse HTML files for now.
 
 ## Small To-Do's:
-* use `%(prog)s` for the programname
 * define global default for arguments
 * change usage message
 * change epilog message
