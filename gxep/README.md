@@ -7,7 +7,6 @@ Currently work in progress, the goal is to mimic grep as close as possible.
 It can only parse HTML files for now.
 
 ## Small To-Do's:
-* define global default for arguments
 * change usage message
 * change epilog message
 * argparse.FileType('w') for the XPath input file
