@@ -6,14 +6,16 @@ import re, os, argparse, time
 from lxml import html
 
 parser = argparse.ArgumentParser(argument_default=False, description="%(prog)s searches for PATTERN in each FILE. A FILE of “-” stands for standard input. If no FILE is given, recursive searches examine the working directory, and nonrecursive searches read standard input. By default, %(prog)s prints the matching lines.")
-group = parser.add_mutually_exclusive_group(required=True)
-group.add_argument("PATTERN", nargs='?', help="Obtain patterns from FILE, one per line. If this option is used multiple times, search for all patterns given. The empty file contains zero patterns, and therefore matches nothing.")
-group.add_argument("-f", "--file", argparse.FileType('r', encoding="utf-8"), help="Obtain patterns from FILE, one per line. If this option is used multiple times, search for all patterns given. The empty file contains zero patterns, and therefore matches nothing.")
+parserGroup_query = parser.add_mutually_exclusive_group(required=True)
+parserGroup_query.add_argument("PATTERN", nargs='?', help="Obtain patterns from FILE, one per line. If this option is used multiple times, search for all patterns given. The empty file contains zero patterns, and therefore matches nothing.")
+parserGroup_query.add_argument("-f", "--file", type=argparse.FileType('r', encoding="utf-8"), help="Obtain patterns from FILE, one per line. If this option is used multiple times, search for all patterns given. The empty file contains zero patterns, and therefore matches nothing.")
 parser.add_argument("checkpath", nargs='?', help="The file or files to check against the given XPaths. Expects directory by default.")
-parser.add_argument("-L", "--files-without-match", action="store_true", help="Suppress normal output; instead print the name of each input file from which no output would normally have been printed. The scanning will stop on the first match.")
-parser.add_argument("-l", "--files-with-matches", action="store_true", help="Suppress normal output; instead print the name of each input file from which output would normally have been printed. The scanning will stop on the first match.")
-parser.add_argument("-r", "--recursive", action="store_true", help="Read all files under each directory, recursively, following symbolic links only if they are on the command line. Note that if no file operand is given, %(prog)s searches the working directory.")
-parser.add_argument("-R", "--dereference-recursive", action="store_true", help="Read all files under each directory, recursively. Follow all symbolic links, unlike -r.")
+parserGroup_filematchInversion = parser.add_mutually_exclusive_group()
+parserGroup_filematchInversion.add_argument("-L", "--files-without-match", action="store_true", help="Suppress normal output; instead print the name of each input file from which no output would normally have been printed. The scanning will stop on the first match.")
+parserGroup_filematchInversion.add_argument("-l", "--files-with-matches", action="store_true", help="Suppress normal output; instead print the name of each input file from which output would normally have been printed. The scanning will stop on the first match.")
+parserGroup_recursion = parser.add_mutually_exclusive_group()
+parserGroup_recursion.add_argument("-r", "--recursive", action="store_true", help="Read all files under each directory, recursively, following symbolic links only if they are on the command line. Note that if no file operand is given, %(prog)s searches the working directory.")
+parserGroup_recursion.add_argument("-R", "--dereference-recursive", action="store_true", help="Read all files under each directory, recursively. Follow all symbolic links, unlike -r.")
 args = parser.parse_args()
 
 root_path = os.path.expanduser(args.checkpath)
