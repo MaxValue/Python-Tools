@@ -9,7 +9,6 @@ It can only parse HTML files for now.
 ## Small To-Do's:
 * change usage message
 * change epilog message
-* argparse.FileType('w') for the XPath input file
 * use choices for query type (HTML or XML) flag
 * check which arguments are always required
 
