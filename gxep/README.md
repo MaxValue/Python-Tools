@@ -10,7 +10,6 @@ It can only parse HTML files for now.
 * change usage message
 * change epilog message
 * use choices for query type (HTML or XML) flag
-* check which arguments are always required
 
 ## Roadmap
 1. Read XPath Queries from file
