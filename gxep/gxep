@@ -49,14 +49,15 @@ try:
 					tree = html.fromstring(this_file.read())
 				else:
 					tree = etree.fromstring(this_file.read())
-				xpath_match = tree.xpath(args.PATTERN)
-				if len(xpath_match) == 0 and args.files_without_match:
-					print(this_filename)
-				elif len(xpath_match) != 0 and not args.files_without_match:
-					if args.files_with_matches:
+				for pattern in patterns:
+					xpath_match = tree.xpath(pattern)
+					if len(xpath_match) == 0 and args.files_without_match:
 						print(this_filename)
-					else:
-						for result in xpath_match:
-							print("{filename}:{match}".format(filename=this_filename, match=result))
+					elif len(xpath_match) != 0 and not args.files_without_match:
+						if args.files_with_matches:
+							print(this_filename)
+						else:
+							for result in xpath_match:
+								print("{filename}:{match}".format(filename=this_filename, match=result))
 except KeyboardInterrupt as e:
 	exit("")
