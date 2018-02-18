@@ -25,7 +25,6 @@ parserGroup_recursion.add_argument("-R", "--dereference-recursive", action="stor
 parser.add_argument("checkpath", nargs='?', help="The file or files to check against the given XPaths. Expects directory by default.")
 args = parser.parse_args()
 
-root_path = os.path.expanduser(args.checkpath)
 
 if not os.path.exists(root_path):
 	parser.error("{}: No such file or directory".format(args.checkpath))
