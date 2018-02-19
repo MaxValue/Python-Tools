@@ -22,42 +22,76 @@ parserGroup_filematchInversion.add_argument("-l", "--files-with-matches", action
 parserGroup_recursion = optionalArguments.add_mutually_exclusive_group()
 parserGroup_recursion.add_argument("-r", "--recursive", action="store_true", help="Read all files under each directory, recursively, following symbolic links only if they are on the command line. Note that if no file operand is given, %(prog)s searches the working directory.")
 parserGroup_recursion.add_argument("-R", "--dereference-recursive", action="store_true", help="Read all files under each directory, recursively. Follow all symbolic links, unlike -r.")
-parser.add_argument("checkpath", nargs='?', help="The file or files to check against the given XPaths. Expects directory by default.")
+parser.add_argument("checkpath", nargs='?', default=["./"], help="The file or files to check against the given XPaths. Expects directory by default.")
 args = parser.parse_args()
 
-root_path = os.path.expanduser(args.checkpath) #fails if no path is given
-
-if not os.path.exists(root_path):
-	parser.error("{}: No such file or directory".format(args.checkpath))
-
-if os.path.isfile(root_path):
-	directory_walker = [("", [], [root_path])]
-elif os.path.isdir(root_path):
-	if args.recursive or args.dereference_recursive:
-		directory_walker = os.walk(top=root_path, followlinks=args.dereference_recursive) #fails if dir/file does not exist (or it fails when opening the file)
-	else:
-		parser.error("{}: Is a directory".format(root_path))
-else:
-	parser.exit("TODO: Read from STDIN")
+re_patternStart = re.compile(r"^\S", re.IGNORECASE)
 
 try:
-	for walk_tuple in directory_walker:
-		for raw_filename in walk_tuple[2]:
-			this_filename = os.path.join(walk_tuple[0], raw_filename)
-			with open(this_filename, encoding="utf-8") as this_file:
-				if args.html:
-					tree = html.fromstring(this_file.read())
-				else:
-					tree = etree.fromstring(this_file.read())
-				for pattern in patterns:
-					xpath_match = tree.xpath(pattern)
-					if len(xpath_match) == 0 and args.files_without_match:
-						print(this_filename)
-					elif len(xpath_match) != 0 and not args.files_without_match:
-						if args.files_with_matches:
+	for i, pathname in enumerate(args.checkpath):
+		clean_path = os.path.expanduser(pathname)
+		if not os.path.exists(clean_path):
+			parser.error("{}: No such file or directory".format(pathname))
+
+		if os.path.isfile(clean_path):
+			args.checkpath[i] = [("", [], [clean_path])]
+
+		elif os.path.isdir(clean_path):
+			if args.recursive or args.dereference_recursive:
+				args.checkpath[i] = os.walk(top=clean_path, followlinks=args.dereference_recursive) #fails if dir/file does not exist (or it fails when opening the file)
+
+			else:
+				parser.error("{}: Is a directory".format(pathname))
+
+		else:
+			parser.exit("TODO: Read from STDIN")
+
+	patterns = []
+	if args.file:
+		lines = args.file.read().splitlines()
+		current_pattern = ""
+		for line in lines:
+			if re_patternStart.match(line):
+				if not current_pattern == "":
+					patterns.append(current_pattern)
+
+				current_pattern = line
+
+			else:
+				if not current_pattern == "":
+					current_pattern += line
+
+		if not current_pattern == "":
+			patterns.append(current_pattern)
+
+	else:
+		patterns.append(args.pattern)
+
+	for directory_walker in args.checkpath:
+		for walk_tuple in directory_walker:
+			for raw_filename in walk_tuple[2]:
+				this_filename = os.path.join(walk_tuple[0], raw_filename)
+				with open(this_filename, encoding="utf-8") as this_file:
+					if args.html:
+						tree = html.fromstring(this_file.read())
+					else:
+						tree = etree.fromstring(this_file.read())
+					for pattern in patterns:
+						xpath_match = tree.xpath(pattern)
+						if len(xpath_match) == 0 and args.files_without_match:
 							print(this_filename)
-						else:
-							for result in xpath_match:
-								print("{filename}:{match}".format(filename=this_filename, match=result))
+						elif len(xpath_match) != 0 and not args.files_without_match:
+							if args.files_with_matches:
+								print(this_filename)
+							else:
+								for result in xpath_match:
+									print("{filename}:{match}".format(filename=this_filename, match=result))
+
 except KeyboardInterrupt as e:
 	exit("")
+
+except etree.XMLSyntaxError as e:
+	if args.xml:
+		parser.error("{}: not an XML file. Try using --html".format(this_filename))
+	else:
+		parser.error("{}: could not be parsed. Probably really badly malformed HTML.".format(this_filename))
