@@ -41,7 +41,8 @@ try:
 				args.checkpath[i] = os.walk(top=clean_path, followlinks=args.dereference_recursive) #fails if dir/file does not exist (or it fails when opening the file)
 
 			else:
-				parser.error("{}: Is a directory".format(pathname))
+				print("{prog}: -r not specified; ommitting directory '{dirname}'".format(prog=parser.prog, dirname=clean_path))
+				del args.checkpath[i]
 
 		else:
 			parser.exit("TODO: Read from STDIN")
