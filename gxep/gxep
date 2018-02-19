@@ -22,7 +22,7 @@ parserGroup_filematchInversion.add_argument("-l", "--files-with-matches", action
 parserGroup_recursion = optionalArguments.add_mutually_exclusive_group()
 parserGroup_recursion.add_argument("-r", "--recursive", action="store_true", help="Read all files under each directory, recursively, following symbolic links only if they are on the command line. Note that if no file operand is given, %(prog)s searches the working directory.")
 parserGroup_recursion.add_argument("-R", "--dereference-recursive", action="store_true", help="Read all files under each directory, recursively. Follow all symbolic links, unlike -r.")
-parser.add_argument("checkpath", nargs='?', default=["./"], help="The file or files to check against the given XPaths. Expects directory by default.")
+parser.add_argument("checkpath", nargs='+', default=["./"], help="The file or files to check against the given XPaths. Expects directory by default.")
 args = parser.parse_args()
 
 re_patternStart = re.compile(r"^\S", re.IGNORECASE)
