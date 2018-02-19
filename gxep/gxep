@@ -5,7 +5,7 @@
 import re, os, argparse, time
 from lxml import html, etree
 
-parser = argparse.ArgumentParser(argument_default=False, description="%(prog)s searches for PATTERN in each FILE. A FILE of “-” stands for standard input. If no FILE is given, recursive searches examine the working directory, and nonrecursive searches read standard input. By default, %(prog)s prints the matching lines.")
+parser = argparse.ArgumentParser(argument_default=False, usage="%(prog)s [OPTION]... --pattern='PATTERN' FILE...\n  or:  %(prog)s [OPTION]... --file=PFILE FILE...\nSearch for PATTERN in each FILE.\nA FILE of “-” stands for standard input.\nIf no FILE is given, recursive searches examine the working directory,\n and nonrecursive searches read standard input.\nWith --file, match against any patterns in PFILE.\nBy default, %(prog)s prints the matching lines.", epilog="Report bugs to: m.fuxjaeger@gmail.com\n%(prog)s home page: <https://github.com/MaxValue/Python-Tools/>\nFull documentation at: <https://github.com/MaxValue/Python-Tools/wiki/>", formatter_class=argparse.RawDescriptionHelpFormatter)
 
 requiredArguments = parser.add_argument_group("Required")
 parserGroup_query = requiredArguments.add_mutually_exclusive_group(required=True)
